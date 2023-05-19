@@ -1,3 +1,3 @@
 # Inf110
 Exercícios de INF110
-<a href="https://boca.dpi.ufv">BOCA</a>
+<a href="http://boca.dpi.ufv.br/">BOCA</a>
