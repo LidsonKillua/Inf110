@@ -4,20 +4,20 @@
 //
 // Autores: Andre Gustavo dos Santos			(criado em 16/06/14)
 //          Andre Gustavo dos Santos			(modificado em 22/05/18)
-//					Andre Gustavo dos Santos			(modificado em 13/09/21)
-//					Andre Gustavo dos Santos			(modificado em 30/05/23)
+//			Andre Gustavo dos Santos			(modificado em 13/09/21)
+//			Andre Gustavo dos Santos			(modificado em 30/05/23)
+//          Lidson Oliveira                     (modificado em 14/06/23)   
 
-#include <iostream>
-#include <fstream>
-#include <cstring>
+#include <bits/stdc++.h>
+#include "Tratamentos.cpp"
 
-const int MAXALTURA  = 500;				//tamanho maximo aceito (pode ser alterado)
-const int MAXLARGURA = 500;
+const string NomeNovaImagem = "novaimagem";
+bool Fcolorida = false;
 
 using namespace std;
 
 int main() {
-	unsigned char imagem[MAXALTURA][MAXLARGURA];	//a imagem propriamente dita
+	unsigned char imagem[MAXALTURA][MAXLARGURA][3];	//a imagem propriamente dita
 	int largura, altura;						//dimensoes da imagem
 	char tipo[4];										//tipo da imagem
 	ifstream arqentrada;						//arquivo que contem a imagem original
@@ -46,12 +46,11 @@ int main() {
 
 	if (strcmp(tipo,"P2")==0) {
 		cout << "Imagem em tons de cinza\n";
+		Fcolorida = false;
 	}
 	else if (strcmp(tipo,"P3")==0) {
 		cout << "Imagem colorida\n";
-		cout << "Desculpe, ainda nao trabalho com esse tipo de imagem.\n";
-		arqentrada.close();
-		return 0;
+		Fcolorida = true;
 	}
 	else if (strcmp(tipo,"P1")==0) {
 		cout << "Imagem preto e branco\n";
@@ -73,6 +72,7 @@ int main() {
 													//nao era comentario, era o primeiro digito da largura
 
 	arqentrada >> largura >> altura;	//Le as dimensoes da imagem, numero de pixels da horizontal e da vertical
+	definirparametros(Fcolorida, largura, altura);
 	cout << "Tamanho: " << largura << " x " << altura << endl;
 	if (largura > MAXLARGURA) {
 		cout << "Desculpe, ainda nao trabalho com imagens com mais de " << MAXLARGURA << " pixels de largura.\n";
@@ -90,10 +90,18 @@ int main() {
 
 
 //*** Leitura dos pixels da imagem ***//
+	if(Fcolorida)
+	for(i=0;i<altura;i++)
+		for(j=0;j<largura;j++) 
+			for(int k=0;k<3;k++){
+				arqentrada >> valor;
+				imagem[i][j][k] = (unsigned char)valor;
+			}
+	else	
 	for(i=0;i<altura;i++)
 		for(j=0;j<largura;j++) {
 			arqentrada >> valor;
-			imagem[i][j] = (unsigned char)valor;
+			imagem[i][j][0] = (unsigned char)valor;
 		}
 //************************************//
 
@@ -105,20 +113,63 @@ int main() {
 //*** TRATAMENTO DA IMAGEM ***//
 //inicialmente sera nesta parte do codigo que voce vai trabalhar
 
-	int fator;
-	cout << "Qual o fator de escurecimento (1-100)? ";
-	cin >> fator;
 
-	//*** Escurece a imagem ***//
-	for(i=0;i<altura;i++)
-		for(j=0;j<largura;j++) {
-			valor = (int)imagem[i][j];			//pega o valor do pixel
-			valor -= fator;									//escurece o pixel
-			if (valor < 0)									//se der negativo
-				valor = 0;										//  deixa preto
-			imagem[i][j] = (unsigned char)valor;	//modifica o pixel
-		}
-    //*************************//
+int opcao; 
+cout << "O que deseja fazer?\n";
+cout << "1 - escurecer\n";
+cout << "2 - clarear\n"; 
+cout << "3 - negativo\n";
+cout << "4 - espelhar\n";
+cout << "5 - realce\n";
+cout << "6 - Filtro de Sobel\n";
+
+cin >> opcao;
+
+switch(opcao){
+	case 1: 
+	  escurecer(imagem); 
+	  break;
+
+	case 2: 
+	  clarear(imagem); 
+	  break;
+
+	case 3: 
+	  negativo(imagem); 
+	  break;
+	
+	case 4:
+	  espelhar(imagem);
+	  break;
+
+	case 5:
+	  realce(imagem);
+	  break;
+	
+	case 6:
+	  cout << "Qual tipo de Sobel?\n";
+	  cout << "1 - Média aritmética\n";
+	  cout << "2 - Maior valor\n"; 
+	  cout << "3 - Magnitude do gradiente\n";
+
+	  cin >> opcao; 
+	  
+	  switch(opcao){
+		case 1: 
+		sobel(imagem, 'M'); 
+		break;
+
+		case 2: 
+		sobel(imagem, 'V'); 
+		break;
+
+		case 3: 
+		sobel(imagem, 'G'); 
+		break;
+	  }  
+	  break;
+}
+  
 
 //*** FIM DO TRATAMENTO DA IMAGEM ***//
 
@@ -127,9 +178,9 @@ int main() {
 //inicialmente nao sera necessario entender nem mudar nada nesta parte
 
 	//*** Grava a nova imagem ***//
-	arqsaida.open("novaimagem.pnm",ios::out);	//Abre arquivo para escrita
+	arqsaida.open(NomeNovaImagem + ".pnm",ios::out);	//Abre arquivo para escrita
 	if (!arqsaida) {
-		cout << "Nao consegui criar novaimagem.pnm\n";
+		cout << "Nao consegui criar" + NomeNovaImagem + ".pnm\n";
 		return 0;
 	}
 
@@ -137,14 +188,24 @@ int main() {
 	arqsaida << "# TP3-INF110, by AGS\n";	//comentario
 	arqsaida << largura << " " << altura;	//dimensoes
 	arqsaida << " " << 255 << endl;				//maior valor
-	for(i=0;i<altura;i++)
-		for(j=0;j<largura;j++)
-			arqsaida << (int)imagem[i][j] << endl;	//pixels
+	
+	if(Fcolorida)
+		for(i=0;i<altura;i++)
+			for(j=0;j<largura;j++)
+				for(int c=0;c<3;c++)
+					arqsaida << (int)imagem[i][j][c] << endl;	//pixels
+	else
+		for(i=0;i<altura;i++)
+			for(j=0;j<largura;j++)
+				arqsaida << (int)imagem[i][j][0] << endl;	//pixels
 
 	arqsaida.close();		//fecha o arquivo
 	//***************************//
 
 //*** FIM DA GRAVACAO DA IMAGEM ***//
+
+    // Abrir o novo arquivo
+    system("novaimagem.pnm");
 
 	return 0;
 }
