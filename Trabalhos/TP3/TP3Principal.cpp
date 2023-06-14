@@ -116,58 +116,78 @@ int main() {
 
 int opcao; 
 cout << "O que deseja fazer?\n";
-cout << "1 - escurecer\n";
-cout << "2 - clarear\n"; 
-cout << "3 - negativo\n";
-cout << "4 - espelhar\n";
-cout << "5 - realce\n";
+cout << "1 - Escurecer\n";
+cout << "2 - Clarear\n"; 
+cout << "3 - Negativo\n";
+cout << "4 - Espelhar\n";
+cout << "5 - Realce\n";
 cout << "6 - Filtro de Sobel\n";
+cout << "7 - Embossing\n";
+cout << "8 - Luminância Vermelha\n";
+
+if(Fcolorida)
+  	cout << "9 - Tons de cinza\n";
 
 cin >> opcao;
 
 switch(opcao){
 	case 1: 
-	  escurecer(imagem); 
-	  break;
+		escurecer(imagem); 
+		break;
 
 	case 2: 
-	  clarear(imagem); 
-	  break;
+		clarear(imagem); 
+		break;
 
 	case 3: 
-	  negativo(imagem); 
-	  break;
+		negativo(imagem); 
+		break;
 	
 	case 4:
-	  espelhar(imagem);
-	  break;
+		espelhar(imagem);
+		break;
 
 	case 5:
-	  realce(imagem);
-	  break;
+		realce(imagem);
+		break;
 	
 	case 6:
-	  cout << "Qual tipo de Sobel?\n";
-	  cout << "1 - Média aritmética\n";
-	  cout << "2 - Maior valor\n"; 
-	  cout << "3 - Magnitude do gradiente\n";
+		cout << "Qual tipo de Sobel?\n";
+		cout << "1 - Média aritmética\n";
+		cout << "2 - Maior valor\n"; 
+		cout << "3 - Magnitude do gradiente\n";
 
-	  cin >> opcao; 
-	  
-	  switch(opcao){
-		case 1: 
-		sobel(imagem, 'M'); 
+		cin >> opcao; 
+		
+		switch(opcao){
+			case 1: 
+			sobel(imagem, 'M'); 
+			break;
+
+			case 2: 
+			sobel(imagem, 'V'); 
+			break;
+
+			case 3: 
+			sobel(imagem, 'G'); 
+			break;
+		}  
 		break;
 
-		case 2: 
-		sobel(imagem, 'V'); 
+	case 7: 
+		if(Fcolorida)
+		  	tonsDeCinza(imagem);
+			
+		embossing(imagem);
 		break;
 
-		case 3: 
-		sobel(imagem, 'G'); 
+	case 8: 
+		LuminanciaVermelha(imagem);
 		break;
-	  }  
-	  break;
+
+	case 9:
+		tonsDeCinza(imagem);
+		break;
 }
   
 
@@ -178,9 +198,16 @@ switch(opcao){
 //inicialmente nao sera necessario entender nem mudar nada nesta parte
 
 	//*** Grava a nova imagem ***//
-	arqsaida.open(NomeNovaImagem + ".pnm",ios::out);	//Abre arquivo para escrita
+	/*cout << "Nome do arquivo para gravar a imagem PNM: ";
+	cin >> nomearq;
+	arqsaida.open(nomearq,ios::out);	//Abre arquivo para escrita
 	if (!arqsaida) {
-		cout << "Nao consegui criar" + NomeNovaImagem + ".pnm\n";
+		cout << "Nao consegui criar" << nomearq << endl;
+		return 0;
+	}*/
+	arqsaida.open("novaimagem.pnm",ios::out);	//Abre arquivo para escrita
+	if (!arqsaida) {
+		cout << "Nao consegui criar" << nomearq << endl;
 		return 0;
 	}
 
@@ -205,7 +232,8 @@ switch(opcao){
 //*** FIM DA GRAVACAO DA IMAGEM ***//
 
     // Abrir o novo arquivo
-    system("novaimagem.pnm");
+    /*system(nomearq);*/
+	system("novaimagem.pnm");
 
 	return 0;
 }
