@@ -9,7 +9,7 @@
 //          Lidson Oliveira                     (modificado em 14/06/23)   
 
 #include <bits/stdc++.h>
-#include "Tratamentos.cpp"
+#include "TP3Tratamentos.cpp"
 
 const string NomeNovaImagem = "novaimagem";
 bool Fcolorida = false;

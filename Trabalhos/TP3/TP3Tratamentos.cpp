@@ -1,5 +1,5 @@
 #include <bits/stdc++.h>
-#include "consts.cpp"
+#include "TP3Consts.cpp"
 using namespace std;
 
 // Auxiliares 
