@@ -34,3 +34,8 @@ Praticas/in.txt
 *.json
 *.pnm
 *.xml
+Trabalhos/TP3/C++Builder/__history/
+Trabalhos/TP3/C++Builder/__recovery/
+Trabalhos/TP3/C++Builder/Win32/
+*.local
+*.h
