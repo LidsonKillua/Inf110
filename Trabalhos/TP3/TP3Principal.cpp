@@ -11,7 +11,6 @@
 #include <bits/stdc++.h>
 #include "TP3Tratamentos.cpp"
 
-const string NomeNovaImagem = "novaimagem";
 bool Fcolorida = false;
 
 using namespace std;
@@ -25,6 +24,7 @@ int main() {
 	char comentario[200], c;				//auxiliares
 	int i, j, valor;								//auxiliares
 	char nomearq[100];							//nome do arquivo
+	string msg = "";
 
 //*** LEITURA DA IMAGEM ***//
 //inicialmente nao sera necessario entender nem mudar nada nesta parte
@@ -113,81 +113,101 @@ int main() {
 //*** TRATAMENTO DA IMAGEM ***//
 //inicialmente sera nesta parte do codigo que voce vai trabalhar
 
+while (true){
+	int opcao; 
+	cout << "O que deseja fazer?\n";
+	cout << "0 - Sair\n";
+	cout << "1 - Escurecer\n";
+	cout << "2 - Clarear\n"; 
+	cout << "3 - Negativo\n";
+	cout << "4 - Espelhar\n";
+	cout << "5 - Realce\n";
+	cout << "6 - Filtro de Sobel\n";
+	cout << "7 - Embossing\n";
+	cout << "8 - Luminancia Vermelha\n";
 
-int opcao; 
-cout << "O que deseja fazer?\n";
-cout << "1 - Escurecer\n";
-cout << "2 - Clarear\n"; 
-cout << "3 - Negativo\n";
-cout << "4 - Espelhar\n";
-cout << "5 - Realce\n";
-cout << "6 - Filtro de Sobel\n";
-cout << "7 - Embossing\n";
-cout << "8 - Luminância Vermelha\n";
+	if(Fcolorida)
+		cout << "9 - Tons de cinza\n";
 
-if(Fcolorida)
-  	cout << "9 - Tons de cinza\n";
+	cin >> opcao;
 
-cin >> opcao;
-
-switch(opcao){
-	case 1: 
-		escurecer(imagem); 
+	if(opcao == 0)
 		break;
 
-	case 2: 
-		clarear(imagem); 
-		break;
+	switch(opcao){
+		case 1: 
+			escurecer(imagem); 
+			AddMsg(msg, "Escurecer");
+			break;
 
-	case 3: 
-		negativo(imagem); 
-		break;
-	
-	case 4:
-		espelhar(imagem);
-		break;
+		case 2: 
+			clarear(imagem); 
+			AddMsg(msg, "Clarear");
+			break;
 
-	case 5:
-		realce(imagem);
-		break;
-	
-	case 6:
-		cout << "Qual tipo de Sobel?\n";
-		cout << "1 - Média aritmética\n";
-		cout << "2 - Maior valor\n"; 
-		cout << "3 - Magnitude do gradiente\n";
-
-		cin >> opcao; 
+		case 3: 
+			negativo(imagem); 
+			AddMsg(msg, "Negativo");
+			break;
 		
-		switch(opcao){
-			case 1: 
-			sobel(imagem, 'M'); 
+		case 4:
+			espelhar(imagem);
+			AddMsg(msg, "Espelhar");
 			break;
 
-			case 2: 
-			sobel(imagem, 'V'); 
+		case 5:
+			realce(imagem);
+			AddMsg(msg, "Realce");
 			break;
+		
+		case 6:
+			cout << "Qual tipo de Sobel?\n";
+			cout << "1 - Media aritmetica\n";
+			cout << "2 - Maior valor\n"; 
+			cout << "3 - Magnitude do gradiente\n";
 
-			case 3: 
-			sobel(imagem, 'G'); 
-			break;
-		}  
-		break;
-
-	case 7: 
-		if(Fcolorida)
-		  	tonsDeCinza(imagem);
+			cin >> opcao; 
 			
-		embossing(imagem);
-		break;
+			switch(opcao){
+				case 1: 
+				sobel(imagem, 'M');
+				AddMsg(msg, "Sobel por Media"); 
+				break;
 
-	case 8: 
-		LuminanciaVermelha(imagem);
-		break;
+				case 2: 
+				sobel(imagem, 'V');
+				AddMsg(msg, "Sobel por Maior Valor"); 
+				break;
 
-	case 9:
-		tonsDeCinza(imagem);
-		break;
+				case 3: 
+				sobel(imagem, 'G'); 
+				AddMsg(msg, "Sobel por Magnitude do Gradiente");
+				break;
+			}  
+			break;
+
+		case 7: 
+			if(Fcolorida)
+				tonsDeCinza(imagem);
+				AddMsg(msg, "Tons de Cinza");
+
+			embossing(imagem);
+			AddMsg(msg, "Embossing");
+			break;
+
+		case 8: 
+			LuminanciaVermelha(imagem);
+			AddMsg(msg, "Luminancia Vermelha");
+			break;
+
+		case 9:
+			tonsDeCinza(imagem);
+			AddMsg(msg, "Tons de Cinza");
+			break;
+	}
+
+	cout << "--------------------------------------------------\n" + msg +
+		    "--------------------------------------------------\n";
 }
   
 
@@ -198,14 +218,10 @@ switch(opcao){
 //inicialmente nao sera necessario entender nem mudar nada nesta parte
 
 	//*** Grava a nova imagem ***//
-	/*cout << "Nome do arquivo para gravar a imagem PNM: ";
+	cout << "Nome do arquivo para gravar a imagem PNM: ";
 	cin >> nomearq;
+	
 	arqsaida.open(nomearq,ios::out);	//Abre arquivo para escrita
-	if (!arqsaida) {
-		cout << "Nao consegui criar" << nomearq << endl;
-		return 0;
-	}*/
-	arqsaida.open("novaimagem.pnm",ios::out);	//Abre arquivo para escrita
 	if (!arqsaida) {
 		cout << "Nao consegui criar" << nomearq << endl;
 		return 0;
@@ -232,8 +248,7 @@ switch(opcao){
 //*** FIM DA GRAVACAO DA IMAGEM ***//
 
     // Abrir o novo arquivo
-    /*system(nomearq);*/
-	system("novaimagem.pnm");
+    system(nomearq);
 
 	return 0;
 }

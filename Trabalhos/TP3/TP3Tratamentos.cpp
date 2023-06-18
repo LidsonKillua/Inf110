@@ -19,6 +19,7 @@ void definirparametros(bool colorida, int largura, int altura){
   Faltura = altura;
 }
 
+//*** Manter o pixel entre 0 e 255 ***//
 int ValidatePx(int valor){
     if (valor > 255)						//se der > 255
 		return 255;							//  deixa branco
@@ -28,6 +29,12 @@ int ValidatePx(int valor){
     return valor;                           // se não, deixa como está
 }
 
+//*** Mensagem mostrada a cada uso ***//
+void AddMsg(string &msg, string filtro){
+    msg += "filtro "+ filtro + " aplicado\n";
+}
+
+//*** Void base que aplica os filtros 3x3(maioria nesse trabalho) ***//
 void aplicarFiltro(unsigned char imagem[][MAXLARGURA][3], int filtro[3][3], int aux[][MAXLARGURA][3]){
     for(int i=0;i<Faltura;i++)
 		for(int j=0;j<Flargura;j++)
@@ -38,24 +45,6 @@ void aplicarFiltro(unsigned char imagem[][MAXLARGURA][3], int filtro[3][3], int 
                     for(int l = ((j-1 < 0) ? j : j-1), n = ((j-1 < 0) ? 1 : 0); (l <= j+1) && (l < MAXLARGURA); l++, n++){
                         soma += ((int)imagem[k][l][c] * filtro[m][n]);
                     }
-                aux[i][j][c] = ValidatePx(soma);	//Valida e salva na temporária
-		}
-}
-
-void aplicarFiltro2(unsigned char imagem[][MAXLARGURA][3], int filtro[3][3], int aux[][MAXLARGURA][3]){
-    int r;
-    for(int i=1;i<Faltura-1;i++)
-		for(int j=1;j<Flargura-1;j++){
-            int soma = 0;
-            // usa k e l para varrer a submatriz 3x3 sem sair dos limites e associa m e n para varrer o filtro.
-            for(int k = 0; k < 3; k++)
-                for(int l = 0; l < 3; l++){
-                    r = imagem[i-(1-k)][j-(1-l)][0];   
-
-                    soma += (r * filtro[k][l]);
-                }
-
-            for(int c=0;c<3;c++)
                 aux[i][j][c] = ValidatePx(soma);	//Valida e salva na temporária
 		}
 }
@@ -144,7 +133,7 @@ void realce(unsigned char imagem[MAXALTURA][MAXLARGURA][3]){
     
     // Usa a função Genérica para aplicar o filtro na imagem e gravar na aux
     aplicarFiltro(imagem, filtro, aux);
-    
+
     // Salva a imagem da auxiliar na principal
     for(int i=0;i<Faltura;i++)
 		for(int j=0;j<Flargura;j++)
@@ -153,9 +142,10 @@ void realce(unsigned char imagem[MAXALTURA][MAXLARGURA][3]){
 }
 
 void sobel(unsigned char imagem[MAXALTURA][MAXLARGURA][3], char tipo = 'M'){
-    int valor,
-    gY[3][3] = {1, 2, 1, 0, 0, 0, -1, -2, -1}, // Filtro na vertical
-    gX[3][3] = {1, 0, -1, 2, 0, -2, 1, 0, -1}; // Filtro na horizontal
+    float valor;
+    int
+      gY[3][3] = {1, 2, 1, 0, 0, 0, -1, -2, -1}, // Filtro na vertical
+      gX[3][3] = {1, 0, -1, 2, 0, -2, 1, 0, -1}; // Filtro na horizontal
     
     // Usa a função Genérica para aplicar o filtro na imagem e gravar na aux
     aplicarFiltro(imagem, gY, auxY);
@@ -174,12 +164,12 @@ void sobel(unsigned char imagem[MAXALTURA][MAXLARGURA][3], char tipo = 'M'){
                     valor = max(auxY[i][j][c], auxX[i][j][c]);
                     break;
                 case 'G': //magnitude do gradiente
-                    valor = sqrt(auxY[i][j][c]+auxX[i][j][c]);
+                    valor = sqrt(pow(auxY[i][j][c], 2) + pow(auxX[i][j][c], 2));
                     break;
                 default: // tipo vai ser 'M' por padrão 
                     break;
                 }
-                imagem[i][j][c] = (unsigned char)ValidatePx(valor); 
+                imagem[i][j][c] = (unsigned char) ValidatePx(valor); 
             }            
 }
 
@@ -209,14 +199,25 @@ void LuminanciaVermelha(unsigned char imagem[MAXALTURA][MAXLARGURA][3]){
 
 void embossing(unsigned char imagem[MAXALTURA][MAXLARGURA][3]){
     int filtro[3][3] = {-1, -1, 0, -1, 0, 1, 0, 1, 1};
-    
-    // Usa a função Genérica para aplicar o filtro na imagem e gravar na aux
-    aplicarFiltro2(imagem, filtro, aux);
-    
-    // Salva a imagem da auxiliar na principal
-    for(int i=0;i<Faltura;i++)
-		for(int j=0;j<Flargura;j++){
+
+    int r;
+
+    // Percorre todas as coordenadas da matriz original, deixando de fora as bordas.
+    for(int i=1;i<Faltura-1;i++)
+		for(int j=1;j<Flargura-1;j++){
+            int soma = 0;
+            // percorre a matriz de convolução
+            for(int k = 0; k < 3; k++)
+                for(int l = 0; l < 3; l++){
+                    // Pega pixel "embaixo" da coordenada do filtro.
+                    r = imagem[i-(1-k)][j-(1-l)][0];   
+                    // multiplica pelo filtro e soma. Para isso podemos usar apenas
+                    // um dos componentes (r, g ou b), já que todos são iguais.
+                    soma += (r * filtro[k][l]);
+                }
+
             for(int c=0;c<3;c++)
-                imagem[i][j][c] = (unsigned char) aux[i][j][c];
-        }
+                //Adiciona 128 para ficar no efeito metálico, valida e atribui o pixel
+                imagem[i-1][j-1][c] = (unsigned char) ValidatePx(soma + 128);
+		}        
 }

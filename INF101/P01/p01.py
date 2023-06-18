@@ -15,7 +15,8 @@ def main():
     # Produz a imagem em tons de cinza em im1 a partir de im.
     print("Tons de cinza...")
     im1 = tonal(im)
-    
+    im1.mostrar()
+
     # Produz o embossing da imagem em im2 a partir de im1.
     print("Embossing...")
     im2 = emboss(im1)
@@ -35,7 +36,7 @@ def tonal(img):
     for i in range(0, m):          
         for j in range(0, n):
             r, g, b = img[i][j] 
-            im1[i][j] = ( int(0.299 * r + 0.587 * g + 0.114 * b),int(0.299 * r + 0.587 * g + 0.114 * b),int(0.299 * r + 0.587 * g + 0.114 * b)) 
+            im1[i][j] = (int(0.299 * r + 0.587 * g + 0.114 * b), int(0.299 * r + 0.587 * g + 0.114 * b), int(0.299 * r + 0.587 * g + 0.114 * b))
     return im1
 
 # Implemente aqui a função emboss() que recebe uma imagem em tons de cinza e
@@ -47,7 +48,7 @@ def emboss(img):
     m = im2.altura
     n = im2.largura
     
-    filtro = [[-1, -1, 0],
+    filtro = [[-1,-1, 0],
               [-1, 0, 1],
               [ 0, 1, 1]]
     # Percorre todas as coordenadas da matriz original, deixando de fora as bordas.
